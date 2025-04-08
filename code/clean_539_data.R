@@ -36,13 +36,12 @@ eta.539_state <- eta.539_raw %>%
   summarise(
     UCFE_initial = sum(ucfe_no_ui_claims, na.rm = TRUE),
     UCFE_continued = sum(ucfe_no_ut_adjusted_continued_weeks_claimed, na.rm = TRUE),
-    ALL_initial = sum(state_ui_initial_claims + stc_workshare_equivalent_initial_claims, na.rm = TRUE),
-    ALL_continued = sum(state_ui_adjusted_continued_weeks_claimed + stc_workshare_equivalent_continued_weeks_claimed, na.rm = TRUE),
+    ALL_initial = sum(state_ui_initial_claims + stc_workshare_equivalent_initial_claims, na.rm = TRUE) / 1000,  #divide by thousand for the figures
+    ALL_continued = sum(state_ui_adjusted_continued_weeks_claimed + stc_workshare_equivalent_continued_weeks_claimed, na.rm = TRUE) / 1000, #divide by thousand for the figures
     .groups = "drop"
   )
 
 # Calculate U.S. totals by report_date
-# Step 1: Summarise to national level (no lag yet)
 eta.539_us <- eta.539_state %>%
   filter(state != "U.S.") %>%
   group_by(report_date) %>%
@@ -62,7 +61,6 @@ eta.539_us <- eta.539_state %>%
     ALL_yp_continued = lag(ALL_continued, 52)
   )
 
-
 # Combine state-level and U.S.-level data
 eta.539_state <- bind_rows(eta.539_state, eta.539_us) %>%
   group_by(state) %>%
@@ -73,15 +71,15 @@ eta.539_state <- bind_rows(eta.539_state, eta.539_us) %>%
     ALL_initial_smooth = slide_dbl(ALL_initial, mean, .before = 3, .complete = TRUE),
     ALL_continued_smooth = slide_dbl(ALL_continued, mean, .before = 3, .complete = TRUE),
     
-    YoY_federal_initial = percent(UCFE_initial / lag(UCFE_initial, 52) - 1),
-    YoY_federal_continued = percent(UCFE_continued / lag(UCFE_continued, 52) - 1),
-    YoY_initial = percent(ALL_initial / lag(ALL_initial, 52) - 1),
-    YoY_continued = percent(ALL_continued / lag(ALL_continued, 52) - 1),
+    YoY_federal_initial = UCFE_initial / lag(UCFE_initial, 52) - 1,
+    YoY_federal_continued = UCFE_continued / lag(UCFE_continued, 52) - 1,
+    YoY_initial = ALL_initial / lag(ALL_initial, 52) - 1,
+    YoY_continued = ALL_continued / lag(ALL_continued, 52) - 1,
     
-    YoY_federal_initial_smooth = percent(UCFE_initial_smooth / lag(UCFE_initial_smooth, 52) - 1),
-    YoY_federal_continued_smooth = percent(UCFE_continued_smooth / lag(UCFE_continued_smooth, 52) - 1),
-    YoY_initial_smooth = percent(ALL_initial_smooth / lag(ALL_initial_smooth, 52) - 1),
-    YoY_continued_smooth = percent(ALL_continued_smooth / lag(ALL_continued_smooth, 52) - 1)
+    YoY_federal_initial_smooth = UCFE_initial_smooth / lag(UCFE_initial_smooth, 52) - 1,
+    YoY_federal_continued_smooth = UCFE_continued_smooth / lag(UCFE_continued_smooth, 52) - 1,
+    YoY_initial_smooth = ALL_initial_smooth / lag(ALL_initial_smooth, 52) - 1,
+    YoY_continued_smooth = ALL_continued_smooth / lag(ALL_continued_smooth, 52) - 1
   ) %>%
   ungroup() %>%
   filter(report_date >= figure_date)
