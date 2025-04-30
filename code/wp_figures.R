@@ -20,6 +20,26 @@ wp_list <- lapply(sheet_vars, function(vars) {
 
 # --- Add multiple state-level data sheets ---
 wp_list[["State Fed Cont Smooth"]] <- state_pivoted_list[["YoY_federal_continued_smooth"]]
+wp_list[["State Cont Smooth"]] <- state_pivoted_list[["YoY_continued_smooth"]]
 
 # --- Write everything to Excel ---
 write.xlsx(wp_list, file = "output/wp_figures.xlsx")
+
+####################
+## State spreasheet
+
+# ----- Outputing a State Master for checking to excel-----
+state_sheet_vars <- list(
+  "All cont state"               = c("ALL_continued"),
+  "Federal cont state"           = c("UCFE_continued")
+)
+# --- Build list of state-level data frames for each sheet ---
+state_list <- lapply(state_sheet_vars, function(vars) {
+  eta.539_state %>%
+    select(report_date,state, all_of(vars)) %>% 
+    pivot_wider(names_from = state, values_from = all_of(vars))
+})
+
+write.xlsx(state_list, file = "output/by_state.xlsx")
+
+

@@ -103,7 +103,7 @@ state_pivoted_list <- lapply(vars_to_pivot, function(var) {
   eta.539_state %>%
     filter(
       report_date >= "2024-03-11",
-      state %in% c("DC", "VA", "MD", "DE", "OH", "ND", "UT", "U.S.")
+      state %in% c("DC", "VA", "MD", "U.S.")
     ) %>% 
     select(report_date, state, value = all_of(var)) %>%
     pivot_wider(names_from = state, values_from = value)
@@ -111,5 +111,7 @@ state_pivoted_list <- lapply(vars_to_pivot, function(var) {
 
 # Name each list element with the corresponding variable name
 names(state_pivoted_list) <- vars_to_pivot
+
+
 
 

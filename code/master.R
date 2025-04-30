@@ -14,9 +14,9 @@ library(zoo)
 library(openxlsx)
 
 ## Set relevant dates
-current_date <- ymd("2025-03-29")
-cutoff_date <- current_date %m-% years(2) - weeks(4)
-figure_date <- current_date %m-% years(1) - weeks(1)
+current_date <- ymd("2025-04-24")
+cutoff_date <- current_date %m-% years(2) - weeks(5)
+figure_date <- current_date %m-% years(1) - weeks(5)
 
 # download raw DOL ETA data and clean
 source("code/clean_539_data.R", echo = TRUE)
