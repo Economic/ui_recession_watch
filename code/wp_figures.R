@@ -1,4 +1,4 @@
-## WP figures ## 
+## WP figures ##
 
 # --- Define variable groupings for national-level sheets ---
 sheet_vars <- list(
@@ -22,24 +22,47 @@ wp_list <- lapply(sheet_vars, function(vars) {
 wp_list[["State Fed Cont Smooth"]] <- state_pivoted_list[["YoY_federal_continued_smooth"]]
 wp_list[["State Cont Smooth"]] <- state_pivoted_list[["YoY_continued_smooth"]]
 
-# --- Write everything to Excel ---
-write.xlsx(wp_list, file = "output/wp_figures.xlsx")
+# --- Create a workbook to store all sheets ---
+wb <- createWorkbook()
+
+# --- Add all national-level sheets to the workbook ---
+for (sheet_name in names(wp_list)) {
+  addWorksheet(wb, sheet_name)                 # Add worksheet
+  writeData(wb, sheet_name, wp_list[[sheet_name]])  # Write data
+  freezePane(wb, sheet_name, firstRow = TRUE)  # Freeze the first row
+}
+
+# --- Write the workbook to a file ---
+saveWorkbook(wb, file = "output/wp_figures.xlsx", overwrite = TRUE)
 
 ####################
-## State spreasheet
+## State spreadsheet ##
 
-# ----- Outputing a State Master for checking to excel-----
+# ----- Outputting a State Master for checking to Excel -----
 state_sheet_vars <- list(
   "All cont state"               = c("ALL_continued"),
   "Federal cont state"           = c("UCFE_continued")
 )
+
 # --- Build list of state-level data frames for each sheet ---
 state_list <- lapply(state_sheet_vars, function(vars) {
   eta.539_state %>%
-    select(report_date,state, all_of(vars)) %>% 
+    select(report_date, state, all_of(vars)) %>% 
     pivot_wider(names_from = state, values_from = all_of(vars))
 })
 
-write.xlsx(state_list, file = "output/by_state.xlsx")
+# --- Create a workbook for state sheets ---
+wb_state <- createWorkbook()
+
+# --- Add all state-level sheets to the workbook ---
+for (sheet_name in names(state_list)) {
+  addWorksheet(wb_state, sheet_name)            # Add worksheet
+  writeData(wb_state, sheet_name, state_list[[sheet_name]])  # Write data
+  freezePane(wb_state, sheet_name, firstRow = TRUE)  # Freeze the first row
+}
+
+# --- Write the workbook to a file ---
+saveWorkbook(wb_state, file = "output/by_state.xlsx", overwrite = TRUE)
+
 
 

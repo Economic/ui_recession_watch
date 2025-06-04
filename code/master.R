@@ -14,7 +14,7 @@ library(zoo)
 library(openxlsx)
 
 ## Set relevant dates
-current_date <- ymd("2025-04-24")
+current_date <- ymd("2025-05-29")
 cutoff_date <- current_date %m-% years(2) - weeks(5)
 figure_date <- current_date %m-% years(1) - weeks(5)
 
@@ -23,4 +23,7 @@ source("code/clean_539_data.R", echo = TRUE)
 
 # create excel for wp figures
 source("code/wp_figures.R", echo = TRUE)
+
+
+
 
