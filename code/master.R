@@ -14,7 +14,7 @@ library(zoo)
 library(openxlsx)
 
 ## Set relevant dates
-current_date <- ymd("2025-05-29")
+current_date <- ymd("2025-06-05")
 cutoff_date <- current_date %m-% years(2) - weeks(5)
 figure_date <- current_date %m-% years(1) - weeks(5)
 
