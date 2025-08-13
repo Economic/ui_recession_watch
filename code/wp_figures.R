@@ -36,9 +36,9 @@ for (sheet_name in names(wp_list)) {
              gridExpand = TRUE)
   }
 }
-
 # --- Write the workbook to a file ---
 saveWorkbook(wb, file = "output/wp_figures.xlsx", overwrite = TRUE)
+
 
 ####################
 ## State spreadsheet ##
@@ -55,7 +55,6 @@ state_list <- lapply(state_sheet_vars, function(vars) {
     select(date, state, all_of(vars)) %>% 
     pivot_wider(names_from = state, values_from = all_of(vars))
 })
-
 # --- Create a workbook for state-level sheets ---
 wb_state <- createWorkbook()
 
@@ -72,7 +71,6 @@ for (sheet_name in names(state_list)) {
              gridExpand = TRUE)
   }
 }
-
 # --- Write the workbook to a file ---
 saveWorkbook(wb_state, file = "output/by_state.xlsx", overwrite = TRUE)
 
