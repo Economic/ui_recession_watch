@@ -3,20 +3,36 @@
 # --- Define variable groupings for national-level sheets ---
 sheet_vars <- list(
   "All Initial"               = c("ALL_initial", "ALL_yp_initial"),
-  "Federal Initial"           = c("UCFE_initial", "UCFE_yp_initial"),
   "All Continued"             = c("ALL_continued", "ALL_yp_continued"),
+  "Federal Initial"           = c("UCFE_initial", "UCFE_yp_initial"),
   "Federal Continued"         = c("UCFE_continued", "UCFE_yp_continued")
 )
 
 # --- Build list of national-level data frames for each sheet ---
 wp_list <- lapply(sheet_vars, function(vars) {
-  eta.539_national %>%
+  df <- eta_539_national %>%
+    filter(date >= figure_date) %>%
     select(date, all_of(vars))
+  
+  # Identify rows where any column is 0 or NA
+  numeric_cols <- df %>% select(all_of(vars))
+  keep_rows <- rowSums(is.na(numeric_cols) | numeric_cols == 0) == 0
+  
+  df[keep_rows, ]
 })
 
-# --- Add multiple state-level data sheets ---
-wp_list[["State Fed Cont Smooth"]] <- state_pivoted_list[["YoY_federal_continued_smooth"]]
-wp_list[["State Cont Smooth"]]     <- state_pivoted_list[["YoY_continued_smooth"]]
+
+# --- Add multiple state-level data sheets, filtering zeros/NAs ---
+wp_list[["State Cont Smooth"]] <- state_pivoted_list[["YoY_continued_smooth"]] |>
+  select(date, DC, US) |> 
+  filter(date >= cutoff_date & date < (current_date - 7))
+
+ 
+
+wp_list[["State Fed Cont Smooth"]] <- state_pivoted_list[["YoY_federal_continued_smooth"]] |>
+  select(date, DC, MD, VA, US) |> 
+   filter(date >= cutoff_date & date < (current_date - 14))
+
 
 # --- Create a workbook to store all sheets ---
 wb <- createWorkbook()
@@ -46,13 +62,21 @@ saveWorkbook(wb, file = "output/wp_figures.xlsx", overwrite = TRUE)
 # --- Define state sheet variables ---
 state_sheet_vars <- list(
   "All cont state"     = c("ALL_continued"),
-  "Federal cont state" = c("UCFE_continued")
+  "Federal cont state" = c("UCFE_continued"), 
+  "All cont state smooth"     = c("ALL_continued_smooth"),
+  "Federal cont state smooth" = c("UCFE_continued_smooth"), 
+  "YoY All cont state smooth"     = c("YoY_continued_smooth"),
+  "YoY Federal cont state smooth " = c("YoY_federal_continued_smooth")
+  
 )
 
 # --- Build list of state-level data frames ---
 state_list <- lapply(state_sheet_vars, function(vars) {
-  eta.539_final %>%
+  eta_539_state %>%
+    filter(date >= figure_date) |> 
     select(date, state, all_of(vars)) %>% 
+     group_by(date, state) %>%
+    summarise(across(all_of(vars), sum, na.rm = TRUE), .groups = "drop") %>%
     pivot_wider(names_from = state, values_from = all_of(vars))
 })
 # --- Create a workbook for state-level sheets ---

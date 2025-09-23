@@ -8,15 +8,18 @@ library(janitor)
 library(readr)
 library(openxlsx)
 library(slider)
-library(ggplot2)
 library(dplyr)
 library(zoo)
-library(openxlsx)
+library(pdftools)
 
 ## Set relevant dates
-current_date <- ymd("2025-08-13")
+current_date <- ymd("2025-09-18")
 cutoff_date <- current_date %m-% years(2) - weeks(5)
 figure_date <- current_date %m-% years(1) - weeks(5)
+
+
+# extract key pdf data that is not found in raw extracts at time of release
+source("code/pdf_extract.R", echo = TRUE)
 
 # download raw DOL ETA data and clean
 source("code/clean_539_data.R", echo = TRUE)
