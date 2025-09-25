@@ -25,13 +25,13 @@ wp_list <- lapply(sheet_vars, function(vars) {
 # --- Add multiple state-level data sheets, filtering zeros/NAs ---
 wp_list[["State Cont Smooth"]] <- state_pivoted_list[["YoY_continued_smooth"]] |>
   select(date, DC, US) |> 
-  filter(date >= cutoff_date & date < (current_date - 7))
+  filter(date >= figure_date & date < (current_date - 7))
 
  
 
 wp_list[["State Fed Cont Smooth"]] <- state_pivoted_list[["YoY_federal_continued_smooth"]] |>
   select(date, DC, MD, VA, US) |> 
-   filter(date >= cutoff_date & date < (current_date - 14))
+   filter(date >= figure_date & date < (current_date - 14))
 
 
 # --- Create a workbook to store all sheets ---
