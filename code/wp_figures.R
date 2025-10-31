@@ -61,6 +61,8 @@ saveWorkbook(wb, file = "output/wp_figures.xlsx", overwrite = TRUE)
 
 # --- Define state sheet variables ---
 state_sheet_vars <- list(
+  "All inital state"     = c("ALL_initial"),
+  "Federal initial state" = c("UCFE_initial"),
   "All cont state"     = c("ALL_continued"),
   "Federal cont state" = c("UCFE_continued"), 
   "All cont state smooth"     = c("ALL_continued_smooth"),

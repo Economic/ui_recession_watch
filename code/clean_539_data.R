@@ -11,8 +11,8 @@ eta.539_new_names <- eta.539_var_names$dol_title
 state_codes <- read_csv(here("suppdata", "state_geocodes.csv")) |> 
   select(state = state_name, state_abb)
 
-#################
-# Raw ETA 539 ####
+##############
+# Raw ETA 539 
 eta.539_raw <- fread(here("suppdata","ar539.csv")) |>
   # replace variable names to be more readable
   setnames(old = eta.539_old_names, new = eta.539_new_names) |>
@@ -24,7 +24,7 @@ eta.539_raw <- fread(here("suppdata","ar539.csv")) |>
   )
 
 
-#################
+##########################################################
 # Cleaning Data and Adding in the numbers extracted by pdf 
 
 # Initial claims summarized by state and report_date
@@ -34,9 +34,9 @@ initial_claims <- eta.539_raw |>
     ALL_initial = (state_ui_initial_claims + stc_workshare_equivalent_initial_claims) / 1000) |> 
   rename(date = report_date)
 
-## Adding the extrcated value 
+# Adding the extrcated value 
 new_row <- tibble(
-  date            = max(initial_claims$date) + 7,  # or whatever your next date should be
+  date            = max(initial_claims$date) + 7,  
   UCFE_initial    = NA_real_,
   ALL_initial     = initial_claims_all/1000,
   state             = "US"
@@ -87,7 +87,7 @@ eta_539_national <- eta.539 |>
 
 eta_539_national$ALL_continued[nrow(eta_539_national) - 1] <- continued_claims_all/1000
 
-##################
+###############
 # State dataset 
 eta_539_state <- eta.539 |> 
   bind_rows(eta_539_national |> select(date, state, UCFE_initial, ALL_initial, UCFE_continued, ALL_continued)) |>
@@ -103,24 +103,6 @@ eta_539_state <- eta.539 |>
     YoY_continued_smooth = ALL_continued_smooth / lag(ALL_continued_smooth, 52) - 1
   )
 
-################
-## State Data in Excel format
-vars_to_pivot <- c(
-  "UCFE_continued",  "ALL_continued",
-   "UCFE_continued_smooth",  "ALL_continued_smooth",
-   "YoY_federal_continued_smooth", "YoY_continued_smooth"
-)
-
-# Create a named list of data frames: one for each variable, pivoted wide
-state_pivoted_list <- lapply(vars_to_pivot, function(var) {
-  eta_539_state %>%
-    group_by(date, state) %>%               # ensure uniqueness
-    summarise(value = sum(.data[[var]], na.rm = TRUE), .groups = "drop") %>%
-    pivot_wider(names_from = state, values_from = value)
-})
-
-# Name each list element with the corresponding variable name
-names(state_pivoted_list) <- vars_to_pivot
 
 
 

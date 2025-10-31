@@ -13,9 +13,9 @@ library(zoo)
 library(pdftools)
 
 ## Set relevant dates
-current_date <- ymd("2025-09-25")
-cutoff_date <- current_date %m-% years(2) - weeks(5)
-figure_date <- current_date %m-% years(1) - weeks(5)
+current_date <- ymd("2025-10-30")
+cutoff_date <- current_date %m-% years(1) - weeks(5)
+figure_date <- current_date %m-% years(2) - weeks(5)
 
 
 # extract key pdf data that is not found in raw extracts at time of release
