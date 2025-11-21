@@ -13,8 +13,8 @@ library(zoo)
 library(pdftools)
 
 ## Set relevant dates
-current_date <- ymd("2025-10-30")
-cutoff_date <- current_date %m-% years(1) - weeks(5)
+current_date <- ymd("2025-11-20")
+cutoff_date <- current_date %m-% years(3) - weeks(5)
 figure_date <- current_date %m-% years(2) - weeks(5)
 
 

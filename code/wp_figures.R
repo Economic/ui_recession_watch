@@ -69,7 +69,6 @@ state_sheet_vars <- list(
   "Federal cont state smooth" = c("UCFE_continued_smooth"), 
   "YoY All cont state smooth"     = c("YoY_continued_smooth"),
   "YoY Federal cont state smooth " = c("YoY_federal_continued_smooth")
-  
 )
 
 # --- Build list of state-level data frames ---

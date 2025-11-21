@@ -104,6 +104,22 @@ eta_539_state <- eta.539 |>
   )
 
 
+################
+## State Data in Excel format
+vars_to_pivot <- c(
+  "UCFE_continued",  "ALL_continued",
+   "UCFE_continued_smooth",  "ALL_continued_smooth",
+   "YoY_federal_continued_smooth", "YoY_continued_smooth"
+)
+
+# Create a named list of data frames: one for each variable, pivoted wide
+state_pivoted_list <- lapply(vars_to_pivot, function(var) {
+  eta_539_state %>%
+    group_by(date, state) %>%               # ensure uniqueness
+    summarise(value = sum(.data[[var]], na.rm = TRUE), .groups = "drop") %>%
+    pivot_wider(names_from = state, values_from = value)
+})
 
 
-
+# Name each list element with the corresponding variable name
+names(state_pivoted_list) <- vars_to_pivot
