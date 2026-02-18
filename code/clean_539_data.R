@@ -11,6 +11,21 @@ eta.539_new_names <- eta.539_var_names$dol_title
 state_codes <- read_csv(here("suppdata", "state_geocodes.csv")) |> 
   select(state = state_name, state_abb)
 
+# Read in the seasonal adjustment files
+GET("https://www.bls.gov/lau/current-factors.xlsx", 
+    add_headers(`User-Agent` = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"),
+    write_disk("suppdata/current-factors.xlsx", overwrite = TRUE))
+
+seasonal_adjustment <- read.xlsx("suppdata/current-factors.xlsx") |> 
+  slice(-1) |>                                        # delete first row
+  mutate(date = seq(as.Date("2020-01-04"), 
+                    by = "7 days", 
+                    length.out = n()),
+         date = as.Date(date)) |> 
+  relocate(date, .before = 1) |> 
+  select(date, IC_adjust = X2, IU_adjust = X3)
+
+
 ##############
 # Raw ETA 539 
 eta.539_raw <- fread(here("suppdata","ar539.csv")) |>
